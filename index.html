@@ -3,271 +3,258 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gerador de Times ⚽</title>
+<title>Sorteador de Times</title>
 
 <style>
-    body {
-        background:#f2f2f2;
-        margin:0;
-        font-family:Arial, sans-serif;
-        padding:16px;
-    }
+/* =========================================
+   TEMAS (CLARO / ESCURO)
+========================================= */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #222;
+    --card-color: #f4f4f4;
+    --input-bg: #fff;
+    --button-bg: #007bff;
+    --button-text: #ffffff;
+    --border-color: #ccc;
+}
 
-    h2 {
-        text-align:center;
-        margin-bottom:20px;
-        font-weight:bold;
-    }
+.dark-theme {
+    --bg-color: #121212;
+    --text-color: #e6e6e6;
+    --card-color: #1e1e1e;
+    --input-bg: #2a2a2a;
+    --button-bg: #444;
+    --button-text: #fff;
+    --border-color: #555;
+}
 
-    .card {
-        background:#fff;
-        border-radius:14px;
-        padding:16px;
-        margin-bottom:18px;
-        box-shadow:0 2px 5px rgba(0,0,0,0.08);
-    }
+/* =========================================
+   ESTILO GLOBAL
+========================================= */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: var(--bg-color);
+    color: var(--text-color);
+    transition: 0.3s;
+}
 
-    textarea {
-        width:100%;
-        border-radius:10px;
-        padding:10px;
-        resize:none;
-        font-size:15px;
-    }
+/* Container responsivo */
+.container {
+    max-width: 600px;
+    margin: auto;
+    background: var(--card-color);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
 
+/* Inputs e selects */
+input, select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+/* Botões */
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: var(--button-bg);
+    color: var(--button-text);
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+/* Lista de jogadores */
+.player-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--input-bg);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* Tema - botão flutuante */
+.theme-btn {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    font-size: 28px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* Mobile responsivo */
+@media (max-width: 480px) {
+    .container {
+        padding: 15px;
+    }
     button {
-        width:100%;
-        padding:12px;
-        border:none;
-        border-radius:10px;
-        font-size:16px;
-        cursor:pointer;
-        margin-top:8px;
+        font-size: 15px;
+        padding: 10px;
     }
-
-    .btn-primary { background:#007bff; color:#fff; }
-    .btn-warning { background:#ffb300; color:#000; }
-    .btn-success { background:#28a745; color:#fff; }
-    .btn-info { background:#0dcaf0; color:#000; }
-
-    /* PLAYER ROW */
-    .player-row{
-        display:flex;
-        align-items:center;
-        gap:10px;
-        padding:10px;
-        background:#fafafa;
-        border-radius:10px;
-        margin-bottom:10px;
-        flex-wrap:wrap;
-    }
-
-    .player-check{
-        transform:scale(1.3);
-        margin-right:6px;
-    }
-
-    .player-name{
-        flex:1 1 260px;
-        padding:8px;
-        border-radius:8px;
-        border:1px solid #ddd;
-        font-size:15px;
-    }
-
-    .player-level{
-        width:110px;
-        padding:8px;
-        border-radius:8px;
-        border:1px solid #ddd;
-        font-size:15px;
-    }
-
-    .player-delete{
-        font-size:22px;
-        background:none;
-        border:none;
-        cursor:pointer;
-    }
-
-    /* RESULT BOX */
-    #teamsOutput{
-        white-space:pre-line;
-        background:#f7f7f7;
-        padding:15px;
-        border-radius:12px;
-        font-size:16px;
-    }
-
-    /* MOBILE FIX */
-    @media (max-width:600px){
-        .player-row{
-            flex-direction:row;
-            justify-content:space-between;
-        }
-    }
+}
 </style>
 </head>
 <body>
 
-<h2>Gerador de Times ⚽</h2>
+<!-- BOTÃO DE ALTERAR TEMA -->
+<button id="themeToggle" class="theme-btn">🌙</button>
 
-<div class="card">
-    <h3>Importar Lista</h3>
-    <textarea id="rawList" rows="7" placeholder="Cole aqui a lista do WhatsApp..."></textarea>
-    <button class="btn-primary" onclick="importList()">Importar Lista</button>
-    <button class="btn-warning" onclick="clearAll()">Limpar Tudo</button>
-</div>
+<div class="container">
+    <h2>Sorteador de Times</h2>
 
-<div class="card">
-    <h3>Jogadores</h3>
-    <div id="playersContainer"></div>
-</div>
-
-<div class="card">
-    <h3>Times</h3>
-
-    <label>Quantidade de times:</label>
-    <select id="teamCount" style="padding:10px; border-radius:10px; width:100%; margin-bottom:10px;">
-        <option value="2">2 Times</option>
-        <option value="3">3 Times</option>
-        <option value="4">4 Times</option>
+    <input type="text" id="playerName" placeholder="Nome do jogador">
+    <select id="playerLevel">
+        <option value="A">Nível A</option>
+        <option value="B">Nível B</option>
+        <option value="C">Nível C</option>
+        <option value="D">Nível D</option>
     </select>
 
-    <button class="btn-success" onclick="generateTeams()">Gerar Times</button>
-    <button class="btn-info" onclick="copyTeams()">Copiar para WhatsApp</button>
+    <button onclick="addPlayer()">Adicionar Jogador</button>
+    <button onclick="clearList()" style="background:#d9534f;">🗑️ Limpar Lista</button>
 
-    <div id="teamsOutput" style="margin-top:15px;"></div>
+    <h3>Jogadores</h3>
+    <div id="playerList"></div>
+
+    <button onclick="generateTeams()">Gerar Times</button>
+    <button onclick="copyTeams()">📲 Copiar para WhatsApp</button>
+
+    <h3>Times Gerados</h3>
+    <div id="teamsResult"></div>
 </div>
 
 <script>
 let players = [];
-let nextId = 1;
 
-function importList(){
-    let text = document.getElementById("rawList").value;
+/* ============================
+   Alternar Tema
+============================ */
+const themeToggle = document.getElementById("themeToggle");
 
-    if(!text.trim()){
-        alert("Cole a lista primeiro!");
-        return;
+themeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark-theme");
+
+    if (document.body.classList.contains("dark-theme")) {
+        themeToggle.textContent = "☀️";
+    } else {
+        themeToggle.textContent = "🌙";
     }
+});
 
-    let lines = text.split("\n");
+/* ============================
+   Limpar emojis automaticamente
+============================ */
+function removeEmoji(text) {
+    return text.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, "");
+}
 
-    lines.forEach(line=>{
-        let clean = line
-            .replace(/^\s*\d+[\)\.\-]*\s*/g,"") 
-            .replace(/[^\p{L}\s]/gu,"")       
-            .trim();
+/* ============================
+   Adicionar jogador
+============================ */
+function addPlayer() {
+    const name = removeEmoji(document.getElementById("playerName").value.trim());
+    const level = document.getElementById("playerLevel").value;
 
-        if(clean.length > 0){
-            players.push({
-                id:nextId++,
-                name:clean,
-                level:2,    
-                active:true
-            });
-        }
-    });
+    if (name === "") return;
 
+    players.push({ name, level });
+    document.getElementById("playerName").value = "";
     renderPlayers();
 }
 
-function clearAll(){
-    players = [];
-    document.getElementById("rawList").value = "";
-    renderPlayers();
-    document.getElementById("teamsOutput").textContent = "";
-}
+/* ============================
+   Renderizar lista de jogadores
+============================ */
+function renderPlayers() {
+    const list = document.getElementById("playerList");
+    list.innerHTML = "";
 
-function renderPlayers(){
-    const box = document.getElementById("playersContainer");
-    box.innerHTML = "";
-
-    players.forEach(p=>{
-        const row = document.createElement("div");
-        row.className = "player-row";
-
-        // checkbox
-        const check = document.createElement("input");
-        check.type = "checkbox";
-        check.checked = p.active;
-        check.className = "player-check";
-        check.onchange = ()=>{ p.active = check.checked; };
-
-        // name
-        const name = document.createElement("input");
-        name.className = "player-name";
-        name.value = p.name;
-        name.oninput = ()=>{ p.name = name.value; };
-
-        // level
-        const lvl = document.createElement("select");
-        lvl.className = "player-level";
-        lvl.innerHTML = `
-            <option value="1">Nível A</option>
-            <option value="2">Nível B</option>
-            <option value="3">Nível C</option>
-            <option value="4">Nível D</option>
+    players.forEach((p, index) => {
+        list.innerHTML += `
+            <div class="player-row">
+                <span>${p.name} — <b>${p.level}</b></span>
+                <button class="delete-btn" onclick="deletePlayer(${index})">🗑️</button>
+            </div>
         `;
-        lvl.value = p.level;
-        lvl.onchange = ()=>{ p.level = parseInt(lvl.value); };
-
-        // delete button (emoji)
-        const del = document.createElement("button");
-        del.className = "player-delete";
-        del.textContent = "🗑️";
-        del.onclick = ()=>{
-            if(confirm("Apagar jogador?")){
-                players = players.filter(x=>x.id !== p.id);
-                renderPlayers();
-            }
-        };
-
-        row.appendChild(check);
-        row.appendChild(name);
-        row.appendChild(lvl);
-        row.appendChild(del);
-        box.appendChild(row);
     });
 }
 
-function generateTeams(){
-    const qt = parseInt(document.getElementById("teamCount").value);
-
-    let activePlayers = players.filter(p=>p.active).map(p=>p.name);
-
-    if(activePlayers.length < qt){
-        alert("Jogadores insuficientes para dividir em " + qt + " times!");
-        return;
-    }
-
-    activePlayers.sort(()=>Math.random()-0.5);
-
-    let teams = Array.from({length:qt}, ()=>[]);
-
-    activePlayers.forEach((name,i)=>{
-        teams[i % qt].push(name);
-    });
-
-    let out = "";
-    teams.forEach((t,i)=>{
-        out += `⚽ *Time ${i+1}:*\n${t.join("\n")}\n\n`;
-    });
-
-    document.getElementById("teamsOutput").textContent = out;
+function deletePlayer(i) {
+    players.splice(i, 1);
+    renderPlayers();
 }
 
-function copyTeams(){
-    const text = document.getElementById("teamsOutput").textContent;
-    if(!text.trim()){
-        alert("Gere os times primeiro!");
-        return;
+/* ============================
+   Limpar lista
+============================ */
+function clearList() {
+    if (confirm("Deseja realmente apagar todos os jogadores?")) {
+        players = [];
+        renderPlayers();
+    }
+}
+
+/* ============================
+   Gerar times equilibrados
+============================ */
+function generateTeams() {
+    const team1 = [];
+    const team2 = [];
+
+    const groups = {
+        A: players.filter(p => p.level === "A"),
+        B: players.filter(p => p.level === "B"),
+        C: players.filter(p => p.level === "C"),
+        D: players.filter(p => p.level === "D")
+    };
+
+    for (let g in groups) {
+        groups[g].sort(() => Math.random() - 0.5);
+
+        groups[g].forEach((p, i) => {
+            if (i % 2 === 0) team1.push(p);
+            else team2.push(p);
+        });
     }
 
-    navigator.clipboard.writeText(text)
-        .then(()=> alert("Times copiados! Pode colar no WhatsApp."))
-        .catch(()=> alert("Erro ao copiar."));
+    document.getElementById("teamsResult").innerHTML =
+        `<p><b>⚽ Time 1:</b><br>${team1.map(p => p.name).join("<br>")}</p>
+         <p><b>⚽ Time 2:</b><br>${team2.map(p => p.name).join("<br>")}</p>`;
+}
+
+/* ============================
+   Copiar para WhatsApp (sem níveis)
+============================ */
+function copyTeams() {
+    const text = document.getElementById("teamsResult").innerText;
+    navigator.clipboard.writeText(text);
+    alert("Times copiados! Agora cole no WhatsApp.");
 }
 </script>
 
