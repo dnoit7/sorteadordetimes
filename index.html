@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PeladaMix</title>
 
-<!-- TAGS PARA COMPARTILHAMENTO (WhatsApp, Facebook, etc) -->
+<!-- TAGS PARA COMPARTILHAMENTO -->
 <meta property="og:title" content="⚽ PeladaMix ⚽">
 <meta property="og:description" content="Monte times equilibrados de forma rápida e automática!">
 <meta property="og:image" content="logopeladamix.png">
@@ -22,13 +22,12 @@
     /* LOGO RESPONSIVA */
     .logo-container {
         text-align: center;
-        margin-top: 20px;
-        margin-bottom: 10px;
+        margin: 10px 0 5px 0;
     }
 
     .logo-container img {
-        width: 70%;
-        max-width: 280px;
+        width: 55%;
+        max-width: 220px;
         height: auto;
     }
 
@@ -36,6 +35,7 @@
         text-align: center;
         margin-bottom: 10px;
         margin-top: 5px;
+        font-weight: bold;
     }
 
     .container {
@@ -44,11 +44,24 @@
         background: white;
         padding: 20px;
         margin: auto;
-        margin-top: 10px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        margin-top: 5px;
+        border-radius: 12px;
+        box-shadow: 0 0 12px rgba(0,0,0,0.08);
     }
 
+    /* Importar lista campo */
+    #importField {
+        width: 100%;
+        height: 120px;
+        padding: 10px;
+        font-size: 15px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        resize: none;
+        margin-bottom: 10px;
+    }
+
+    /* Layout dos jogadores */
     .row {
         display: flex;
         align-items: center;
@@ -60,23 +73,38 @@
         flex: 1;
         padding: 8px;
         border: 1px solid #ccc;
-        border-radius: 5px;
+        border-radius: 6px;
     }
 
     .row select {
         width: 70px;
         padding: 8px;
+        border-radius: 6px;
         border: 1px solid #ccc;
-        border-radius: 5px;
     }
 
-    button {
-        padding: 10px;
+    .checkbox {
+        transform: scale(1.3);
+    }
+
+    .delete-btn {
+        background: transparent;
         border: none;
-        border-radius: 5px;
+        cursor: pointer;
+        font-size: 26px;
+        margin-left: 5px;
+    }
+
+    /* BOTÕES PERSONALIZADOS */
+    button {
+        padding: 12px;
+        border: none;
+        border-radius: 6px;
         color: white;
         cursor: pointer;
-        font-size: 16px;
+        font-size: 17px;
+        width: 100%;
+        margin-bottom: 10px;
     }
 
     #importarLista {
@@ -91,32 +119,26 @@
         background-color: #008000;
     }
 
-    .delete-btn {
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        font-size: 22px;
-        margin-left: 5px;
-    }
-
-    .delete-btn:hover {
-        opacity: 0.7;
-    }
-
-    .checkbox {
-        transform: scale(1.4);
-    }
-
 </style>
 </head>
 <body>
 
-<!-- LOGO CENTRALIZADA -->
+<!-- LOGO -->
 <div class="logo-container">
-    <img src="logopeladamix.png" alt="PeladaMix Logo">
+    <img src="logopeladamix.png" alt="Logo PeladaMix">
 </div>
 
 <div class="container">
+
+    <!-- CAMPO PARA COLAR LISTA (RESTAURADO!) -->
+    <h2>1) Importar Lista</h2>
+
+    <textarea id="importField" placeholder="Cole aqui a lista de jogadores (um por linha)..."></textarea>
+
+    <button id="importarLista" onclick="importList()">Importar Lista</button>
+
+    <br>
+
     <h2>2) Jogadores</h2>
 
     <div id="playersList"></div>
@@ -125,7 +147,6 @@
 
     <br><br>
 
-    <button id="importarLista" onclick="importList()">Importar Lista</button>
     <button id="limparTudo" onclick="clearAll()">Limpar Tudo</button>
     <button id="sortear" onclick="sortTeams()">Sortear Times</button>
 
@@ -133,6 +154,7 @@
 
     <h2>Times Gerados</h2>
     <div id="teamsOutput"></div>
+
 </div>
 
 <script>
@@ -166,20 +188,26 @@ function removePlayer(id) {
 }
 
 function importList() {
-    const text = prompt("Cole a lista de nomes, um por linha:");
-    if (!text) return;
+    const text = document.getElementById("importField").value.trim();
+    if (!text) {
+        alert("Cole a lista no campo acima!");
+        return;
+    }
 
     const lines = text.split("\n");
 
     lines.forEach(name => {
         if (name.trim() !== "") addPlayer(name.trim());
     });
+
+    document.getElementById("importField").value = "";
 }
 
 function clearAll() {
     if (confirm("Tem certeza que deseja limpar tudo?")) {
         document.getElementById("playersList").innerHTML = "";
         document.getElementById("teamsOutput").innerHTML = "";
+        document.getElementById("importField").value = "";
     }
 }
 
