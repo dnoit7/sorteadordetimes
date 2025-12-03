@@ -43,7 +43,7 @@
         max-width: 800px;
         background: white;
         padding: 20px;
-        margin: 00px;
+        margin: auto;
         margin-top: 5px;
         border-radius: 12px;
         box-shadow: 0 0 12px rgba(0,0,0,0.08);
@@ -235,8 +235,24 @@ function importList() {
         return;
     }
 
-    // Split by lines and clean: remove timestamps, emojis, and extra spaces
-    const lines = text.split("\n").map(line => line.replace(/^\$\d{1,2}\/\d{1,2}\/\d{4}, \d{1,2}:\d{2}:\d{2}\$ /, "").replace(/[^\w\sÀ-ÿ]/g, "").trim()).filter(name => name && !name.includes(":"));
+    // Split by lines and clean: extract names, remove timestamps, numbers, emojis, and special chars
+    const lines = text.split("\n").map(line => {
+        // Remove timestamp if present
+        line = line.replace(/^\$\d{1,2}\/\d{1,2}\/\d{4}, \d{1,2}:\d{2}:\d{2}\$ /, "");
+        
+        // If there's a ":", extract only the name before it (e.g., "João: Oi" -> "João")
+        if (line.includes(":")) {
+            line = line.split(":")[0].trim();
+        }
+        
+        // Remove numbers
+        line = line.replace(/\d+/g, "");
+        
+        // Remove emojis and special characters (keep letters, spaces, and accents)
+        line = line.replace(/[^\w\sÀ-ÿ]/g, "").trim();
+        
+        return line;
+    }).filter(name => name && name.length > 0); // Filter out empty lines
 
     lines.forEach(name => {
         if (name) addPlayer(name);
