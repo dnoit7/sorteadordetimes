@@ -53,7 +53,7 @@
     #importField {
         width: 100%;
         height: 120px;
-        padding: 00px;
+        padding: 10px;
         font-size: 15px;
         border-radius: 8px;
         border: 1px solid #ccc;
@@ -119,6 +119,9 @@
         background-color: #008000;
     }
 
+    #copiar {
+        background-color: #25D366;
+    }
 </style>
 </head>
 <body>
@@ -155,14 +158,22 @@
     <h2>Times Gerados</h2>
     <div id="teamsOutput"></div>
     
-<button id="copiar" style="background:#25D366;" onclick="copyWhatsApp()">Copiar p/ WhatsApp</button>
+    <button id="copiar" onclick="copyWhatsApp()">Copiar p/ WhatsApp</button>
 
 </div>
 
 <script>
 let playerCount = 0;
 
+// Add a new player row
 function addPlayer(name = "", checked = true, level = "A") {
+    // Check for duplicates
+    const existingNames = Array.from(document.querySelectorAll("#playersList input[type='text']")).map(input => input.value.trim().toLowerCase());
+    if (name && existingNames.includes(name.toLowerCase())) {
+        alert("Jogador já adicionado!");
+        return;
+    }
+
     playerCount++;
     const list = document.getElementById("playersList");
 
@@ -171,24 +182,26 @@ function addPlayer(name = "", checked = true, level = "A") {
     row.id = "player" + playerCount;
 
     row.innerHTML = `
-        <input type="checkbox" class="checkbox" ${checked ? "checked" : ""}>
-        <input type="text" placeholder="Nome" value="${name}">
-        <select>
+        <input type="checkbox" class="checkbox" ${checked ? "checked" : ""} aria-label="Incluir jogador">
+        <input type="text" placeholder="Nome" value="${name}" aria-label="Nome do jogador">
+        <select aria-label="Nível do jogador">
             <option value="A" ${level === "A" ? "selected" : ""}>A</option>
             <option value="B" ${level === "B" ? "selected" : ""}>B</option>
             <option value="C" ${level === "C" ? "selected" : ""}>C</option>
             <option value="D" ${level === "D" ? "selected" : ""}>D</option>
         </select>
-        <button class="delete-btn" onclick="removePlayer('player${playerCount}')">🗑️</button>
+        <button class="delete-btn" onclick="removePlayer('player${playerCount}')" aria-label="Remover jogador">🗑️</button>
     `;
 
     list.appendChild(row);
 }
 
+// Remove a player row
 function removePlayer(id) {
     document.getElementById(id).remove();
 }
 
+// Import list from textarea, cleaning up WhatsApp-style input
 function importList() {
     const text = document.getElementById("importField").value.trim();
     if (!text) {
@@ -196,23 +209,27 @@ function importList() {
         return;
     }
 
-    const lines = text.split("\n");
+    // Split by lines and clean: remove timestamps, emojis, and extra spaces
+    const lines = text.split("\n").map(line => line.replace(/^\$\d{1,2}\/\d{1,2}\/\d{4}, \d{1,2}:\d{2}:\d{2}\$ /, "").replace(/[^\w\sÀ-ÿ]/g, "").trim()).filter(name => name && !name.includes(":"));
 
     lines.forEach(name => {
-        if (name.trim() !== "") addPlayer(name.trim());
+        if (name) addPlayer(name);
     });
 
     document.getElementById("importField").value = "";
 }
 
+// Clear all data
 function clearAll() {
     if (confirm("Tem certeza que deseja limpar tudo?")) {
         document.getElementById("playersList").innerHTML = "";
         document.getElementById("teamsOutput").innerHTML = "";
         document.getElementById("importField").value = "";
+        playerCount = 0;
     }
 }
 
+// Sort and balance teams by level
 function sortTeams() {
     const players = [];
 
@@ -221,8 +238,8 @@ function sortTeams() {
         const name = row.querySelector("input[type='text']").value.trim();
         const level = row.querySelector("select").value;
 
-        if (checkbox && name !== "") {
-            players.push({ name, level });
+        if (checkbox && name) {
+            players.push({ name, level, levelValue: "ABCD".indexOf(level) }); // Assign numeric value for sorting
         }
     });
 
@@ -231,24 +248,77 @@ function sortTeams() {
         return;
     }
 
-    shuffle(players);
+    // Sort by level for balancing
+    players.sort((a, b) => a.levelValue - b.levelValue);
 
-    let output = "<h3>Times:</h3>";
-    let teamNum = 1;
+    // Distribute into teams (aim for balance)
+    const teams = [];
+    const teamSize = 5;
+    let teamIndex = 0;
 
-    players.forEach((p, index) => {
-        if (index % 5 === 0) output += `<br><strong>Time ${teamNum++}:</strong><br>`;
-        output += `• ${p.name} (${p.level})<br>`;
+    players.forEach(player => {
+        if (!teams[teamIndex]) teams[teamIndex] = [];
+        teams[teamIndex].push(player);
+        teamIndex = (teamIndex + 1) % Math.ceil(players.length / teamSize);
+    });
+
+    // Display teams
+    let output = "<h3>Times Equilibrados:</h3>";
+    teams.forEach((team, index) => {
+        output += `<br><strong>Time ${index + 1}:</strong><br>`;
+        team.forEach(p => output += `• ${p.name} (${p.level})<br>`);
     });
 
     document.getElementById("teamsOutput").innerHTML = output;
 }
 
-function shuffle(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
+// Copy teams to clipboard for WhatsApp
+function copyWhatsApp() {
+    const outputElement = document.getElementById("teamsOutput");
+    const output = outputElement.innerText || outputElement.textContent; // Compatibilidade com navegadores antigos
+    if (!output || output.trim() === "") {
+        alert("Gere os times primeiro!");
+        return;
     }
+
+    // Tenta usar a API moderna de clipboard
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(output).then(() => {
+            alert("Times copiados para o WhatsApp! Cole no chat.");
+        }).catch(err => {
+            console.error("Erro na API de clipboard:", err);
+            fallbackCopy(output);
+        });
+    } else {
+        // Fallback para navegadores antigos
+        fallbackCopy(output);
+    }
+}
+
+// Função de fallback para copiar
+function fallbackCopy(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed"; // Fora da tela
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            alert("Times copiados para o WhatsApp! Cole no chat.");
+        } else {
+            throw new Error("ExecCommand falhou");
+        }
+    } catch (err) {
+        console.error("Erro no fallback:", err);
+        alert("Não foi possível copiar automaticamente. Selecione e copie o texto abaixo manualmente:\n\n" + text);
+    }
+    
+    document.body.removeChild(textArea);
 }
 </script>
 
