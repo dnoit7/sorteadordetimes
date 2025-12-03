@@ -43,7 +43,7 @@
         max-width: 800px;
         background: white;
         padding: 20px;
-        margin: auto;
+        margin: 00px;
         margin-top: 5px;
         border-radius: 12px;
         box-shadow: 0 0 12px rgba(0,0,0,0.08);
@@ -127,6 +127,16 @@
     #addPlayerBtn {
         background-color: #FF0000; /* Vermelho */
     }
+
+    /* Novo: Estilo para o select de número de times */
+    #numTimesSelect {
+        width: 100%;
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
 </style>
 </head>
 <body>
@@ -155,6 +165,16 @@
     <button id="addPlayerBtn" onclick="addPlayer()">Adicionar Jogador</button>
 
     <br><br>
+
+    <!-- Novo: Select para escolher número de times -->
+    <label for="numTimesSelect">Número de Times:</label>
+    <select id="numTimesSelect">
+        <option value="1">1 Time</option>
+        <option value="2" selected>2 Times</option> <!-- Padrão: 2 times -->
+        <option value="3">3 Times</option>
+        <option value="4">4 Times</option>
+        <option value="5">5 Times</option>
+    </select>
 
     <button id="limparTudo" onclick="clearAll()">Limpar Tudo</button>
     <button id="sortear" onclick="sortTeams()">Sortear Times</button>
@@ -254,18 +274,20 @@ function sortTeams() {
         return;
     }
 
+    const numTimes = parseInt(document.getElementById("numTimesSelect").value);
+    if (numTimes > players.length) {
+        alert("Número de times não pode ser maior que o número de jogadores!");
+        return;
+    }
+
     // Sort by level for balancing
     players.sort((a, b) => a.levelValue - b.levelValue);
 
     // Distribute into teams (aim for balance)
-    const teams = [];
-    const teamSize = 5;
-    let teamIndex = 0;
-
-    players.forEach(player => {
-        if (!teams[teamIndex]) teams[teamIndex] = [];
+    const teams = Array.from({ length: numTimes }, () => []);
+    players.forEach((player, index) => {
+        const teamIndex = index % numTimes;
         teams[teamIndex].push(player);
-        teamIndex = (teamIndex + 1) % Math.ceil(players.length / teamSize);
     });
 
     // Display teams (removido o nível dos jogadores)
