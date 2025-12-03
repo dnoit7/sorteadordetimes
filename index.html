@@ -122,6 +122,11 @@
     #copiar {
         background-color: #25D366;
     }
+
+    /* Novo: Cor vermelha para o botão "Adicionar Jogador" */
+    #addPlayerBtn {
+        background-color: #FF0000; /* Vermelho */
+    }
 </style>
 </head>
 <body>
@@ -146,7 +151,8 @@
 
     <div id="playersList"></div>
 
-    <button onclick="addPlayer()">Adicionar Jogador</button>
+    <!-- Novo: ID adicionado ao botão para estilização -->
+    <button id="addPlayerBtn" onclick="addPlayer()">Adicionar Jogador</button>
 
     <br><br>
 
@@ -262,11 +268,11 @@ function sortTeams() {
         teamIndex = (teamIndex + 1) % Math.ceil(players.length / teamSize);
     });
 
-    // Display teams
+    // Display teams (removido o nível dos jogadores)
     let output = "<h3>Times Equilibrados:</h3>";
     teams.forEach((team, index) => {
         output += `<br><strong>Time ${index + 1}:</strong><br>`;
-        team.forEach(p => output += `• ${p.name} (${p.level})<br>`);
+        team.forEach(p => output += `• ${p.name}<br>`);  // Alterado: removido (${p.level})
     });
 
     document.getElementById("teamsOutput").innerHTML = output;
