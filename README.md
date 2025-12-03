@@ -1,4 +1,4 @@
-# ⚽ Sorteador de Times
+# ⚽ PeladaMix ⚽
 
 Aplicação simples e eficiente para organizar partidas de futebol entre amigos.  
 Permite cadastrar jogadores, atribuir níveis (A, B, C, D) e gerar times equilibrados automaticamente.
