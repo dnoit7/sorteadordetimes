@@ -1,292 +1,224 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>⚽ PeladaMix ⚽</title>
+<title>PeladaMix</title>
 
-    <!-- META PREVIEW / WHATSAPP / FACEBOOK -->
-<meta property="og:title" content="⚽ PeladaMix — Sorteador de Times" />
-<meta property="og:description" content="Monte times equilibrados com facilidade! Importe a lista do WhatsApp e gere os times automaticamente." />
-<meta property="og:image" content="https://dnoit7.github.io/peladamix/logopeladamix.png" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://dnoit7.github.io/peladamix" />
-
-<!-- TWITTER PREVIEW -->
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="⚽ PeladaMix — Sorteador de Times" />
-<meta name="twitter:description" content="Monte times equilibrados com 1 clique!" />
-<meta name="twitter:image" content="https://dnoit7.github.io/peladamix/logopeladamix.png" />
-
-<!-- MOBILE ICONES -->
-<link rel="apple-touch-icon" sizes="180x180" href="logopeladamix.png" />
-<link rel="icon" type="image/png" sizes="192x192" href="logopeladamix.png" />
-<link rel="icon" type="image/png" href="logopeladamix.png" />
-
+<!-- TAGS PARA COMPARTILHAMENTO (WhatsApp, Facebook, etc) -->
+<meta property="og:title" content="⚽ PeladaMix ⚽">
+<meta property="og:description" content="Monte times equilibrados de forma rápida e automática!">
+<meta property="og:image" content="logopeladamix.png">
+<meta property="og:type" content="website">
 
 <style>
     body {
-        background:#f2f2f2;
-        margin:0;
-        font-family:Arial, sans-serif;
-        padding:16px;
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* LOGO RESPONSIVA */
+    .logo-container {
+        text-align: center;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+
+    .logo-container img {
+        width: 70%;
+        max-width: 280px;
+        height: auto;
     }
 
     h2 {
-        text-align:center;
-        margin-bottom:20px;
-        font-weight:bold;
+        text-align: center;
+        margin-bottom: 10px;
+        margin-top: 5px;
     }
 
-    .card {
-        background:#fff;
-        border-radius:14px;
-        padding:16px;
-        margin-bottom:18px;
-        box-shadow:0 2px 5px rgba(0,0,0,0.08);
+    .container {
+        width: 90%;
+        max-width: 800px;
+        background: white;
+        padding: 20px;
+        margin: auto;
+        margin-top: 10px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
-    textarea {
-        width:100%;
-        border-radius:10px;
-        padding:10px;
-        resize:none;
-        font-size:15px;
+    .row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .row input[type="text"] {
+        flex: 1;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .row select {
+        width: 70px;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
     }
 
     button {
-        width:100%;
-        padding:12px;
-        border:none;
-        border-radius:10px;
-        font-size:16px;
-        cursor:pointer;
-        margin-top:8px;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+        font-size: 16px;
     }
 
-    .btn-primary { background:#007bff; color:#fff; }
-    .btn-warning { background:#ffb300; color:#000; }
-    .btn-success { background:#28a745; color:#fff; }
-    .btn-info { background:#0dcaf0; color:#000; }
-
-    /* PLAYER ROW */
-    .player-row{
-        display:flex;
-        align-items:center;
-        gap:10px;
-        padding:10px;
-        background:#fafafa;
-        border-radius:10px;
-        margin-bottom:10px;
-        flex-wrap:wrap;
+    #importarLista {
+        background-color: #151419;
     }
 
-    .player-check{
-        transform:scale(1.3);
-        margin-right:6px;
+    #limparTudo {
+        background-color: #f56e0f;
     }
 
-    .player-name{
-        flex:1 1 260px;
-        padding:8px;
-        border-radius:8px;
-        border:1px solid #ddd;
-        font-size:15px;
+    #sortear {
+        background-color: #008000;
     }
 
-    .player-level{
-        width:110px;
-        padding:8px;
-        border-radius:8px;
-        border:1px solid #ddd;
-        font-size:15px;
+    .delete-btn {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 22px;
+        margin-left: 5px;
     }
 
-    .player-delete{
-        font-size:22px;
-        background:none;
-        border:none;
-        cursor:pointer;
+    .delete-btn:hover {
+        opacity: 0.7;
     }
 
-    /* RESULT BOX */
-    #teamsOutput{
-        white-space:pre-line;
-        background:#f7f7f7;
-        padding:15px;
-        border-radius:12px;
-        font-size:16px;
+    .checkbox {
+        transform: scale(1.4);
     }
 
-    /* MOBILE FIX */
-    @media (max-width:600px){
-        .player-row{
-            flex-direction:row;
-            justify-content:space-between;
-        }
-    }
 </style>
 </head>
 <body>
 
-<h2>⚽ PeladaMix ⚽</h2>
-
-<div class="card">
-    <h3>Importar Lista</h3>
-    <textarea id="rawList" rows="7" placeholder="Digite aqui o nome dos atletas ou cole a lista do WhatsApp..."></textarea>
-    <button class="btn-primary" onclick="importList()">Importar Lista</button>
-    <button class="btn-warning" onclick="clearAll()">Limpar Tudo</button>
+<!-- LOGO CENTRALIZADA -->
+<div class="logo-container">
+    <img src="logopeladamix.png" alt="PeladaMix Logo">
 </div>
 
-<div class="card">
-    <h3>Jogadores</h3>
-    <div id="playersContainer"></div>
-</div>
+<div class="container">
+    <h2>2) Jogadores</h2>
 
-<div class="card">
-    <h3>Times</h3>
+    <div id="playersList"></div>
 
-    <label>Quantidade de times:</label>
-    <select id="teamCount" style="padding:10px; border-radius:10px; width:100%; margin-bottom:10px;">
-        <option value="2">2 Times</option>
-        <option value="3">3 Times</option>
-        <option value="4">4 Times</option>
-    </select>
+    <button onclick="addPlayer()">Adicionar Jogador</button>
 
-    <button class="btn-success" onclick="generateTeams()">Gerar Times</button>
-    <button class="btn-info" onclick="copyTeams()">Copiar para WhatsApp</button>
+    <br><br>
 
-    <div id="teamsOutput" style="margin-top:15px;"></div>
+    <button id="importarLista" onclick="importList()">Importar Lista</button>
+    <button id="limparTudo" onclick="clearAll()">Limpar Tudo</button>
+    <button id="sortear" onclick="sortTeams()">Sortear Times</button>
+
+    <br><br>
+
+    <h2>Times Gerados</h2>
+    <div id="teamsOutput"></div>
 </div>
 
 <script>
-let players = [];
-let nextId = 1;
+let playerCount = 0;
 
-function importList(){
-    let text = document.getElementById("rawList").value;
+function addPlayer(name = "", checked = true, level = "A") {
+    playerCount++;
+    const list = document.getElementById("playersList");
 
-    if(!text.trim()){
-        alert("Cole a lista primeiro!");
-        return;
+    const row = document.createElement("div");
+    row.className = "row";
+    row.id = "player" + playerCount;
+
+    row.innerHTML = `
+        <input type="checkbox" class="checkbox" ${checked ? "checked" : ""}>
+        <input type="text" placeholder="Nome" value="${name}">
+        <select>
+            <option value="A" ${level === "A" ? "selected" : ""}>A</option>
+            <option value="B" ${level === "B" ? "selected" : ""}>B</option>
+            <option value="C" ${level === "C" ? "selected" : ""}>C</option>
+            <option value="D" ${level === "D" ? "selected" : ""}>D</option>
+        </select>
+        <button class="delete-btn" onclick="removePlayer('player${playerCount}')">🗑️</button>
+    `;
+
+    list.appendChild(row);
+}
+
+function removePlayer(id) {
+    document.getElementById(id).remove();
+}
+
+function importList() {
+    const text = prompt("Cole a lista de nomes, um por linha:");
+    if (!text) return;
+
+    const lines = text.split("\n");
+
+    lines.forEach(name => {
+        if (name.trim() !== "") addPlayer(name.trim());
+    });
+}
+
+function clearAll() {
+    if (confirm("Tem certeza que deseja limpar tudo?")) {
+        document.getElementById("playersList").innerHTML = "";
+        document.getElementById("teamsOutput").innerHTML = "";
     }
+}
 
-    let lines = text.split("\n");
+function sortTeams() {
+    const players = [];
 
-    lines.forEach(line=>{
-        let clean = line
-            .replace(/^\s*\d+[\)\.\-]*\s*/g,"") 
-            .replace(/[^\p{L}\s]/gu,"")       
-            .trim();
+    document.querySelectorAll("#playersList .row").forEach(row => {
+        const checkbox = row.querySelector("input[type='checkbox']").checked;
+        const name = row.querySelector("input[type='text']").value.trim();
+        const level = row.querySelector("select").value;
 
-        if(clean.length > 0){
-            players.push({
-                id:nextId++,
-                name:clean,
-                level:2,    
-                active:true
-            });
+        if (checkbox && name !== "") {
+            players.push({ name, level });
         }
     });
 
-    renderPlayers();
-}
-
-function clearAll(){
-    players = [];
-    document.getElementById("rawList").value = "";
-    renderPlayers();
-    document.getElementById("teamsOutput").textContent = "";
-}
-
-function renderPlayers(){
-    const box = document.getElementById("playersContainer");
-    box.innerHTML = "";
-
-    players.forEach(p=>{
-        const row = document.createElement("div");
-        row.className = "player-row";
-
-        // checkbox
-        const check = document.createElement("input");
-        check.type = "checkbox";
-        check.checked = p.active;
-        check.className = "player-check";
-        check.onchange = ()=>{ p.active = check.checked; };
-
-        // name
-        const name = document.createElement("input");
-        name.className = "player-name";
-        name.value = p.name;
-        name.oninput = ()=>{ p.name = name.value; };
-
-        // level
-        const lvl = document.createElement("select");
-        lvl.className = "player-level";
-        lvl.innerHTML = `
-            <option value="1">Nível A</option>
-            <option value="2">Nível B</option>
-            <option value="3">Nível C</option>
-            <option value="4">Nível D</option>
-        `;
-        lvl.value = p.level;
-        lvl.onchange = ()=>{ p.level = parseInt(lvl.value); };
-
-        // delete button (emoji)
-        const del = document.createElement("button");
-        del.className = "player-delete";
-        del.textContent = "🗑️";
-        del.onclick = ()=>{
-            if(confirm("Apagar jogador?")){
-                players = players.filter(x=>x.id !== p.id);
-                renderPlayers();
-            }
-        };
-
-        row.appendChild(check);
-        row.appendChild(name);
-        row.appendChild(lvl);
-        row.appendChild(del);
-        box.appendChild(row);
-    });
-}
-
-function generateTeams(){
-    const qt = parseInt(document.getElementById("teamCount").value);
-
-    let activePlayers = players.filter(p=>p.active).map(p=>p.name);
-
-    if(activePlayers.length < qt){
-        alert("Jogadores insuficientes para dividir em " + qt + " times!");
+    if (players.length < 2) {
+        alert("Adicione ao menos 2 jogadores!");
         return;
     }
 
-    activePlayers.sort(()=>Math.random()-0.5);
+    shuffle(players);
 
-    let teams = Array.from({length:qt}, ()=>[]);
+    let output = "<h3>Times:</h3>";
+    let teamNum = 1;
 
-    activePlayers.forEach((name,i)=>{
-        teams[i % qt].push(name);
+    players.forEach((p, index) => {
+        if (index % 5 === 0) output += `<br><strong>Time ${teamNum++}:</strong><br>`;
+        output += `• ${p.name} (${p.level})<br>`;
     });
 
-    let out = "";
-    teams.forEach((t,i)=>{
-        out += `⚽ *Time ${i+1}:*\n${t.join("\n")}\n\n`;
-    });
-
-    document.getElementById("teamsOutput").textContent = out;
+    document.getElementById("teamsOutput").innerHTML = output;
 }
 
-function copyTeams(){
-    const text = document.getElementById("teamsOutput").textContent;
-    if(!text.trim()){
-        alert("Gere os times primeiro!");
-        return;
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
     }
-
-    navigator.clipboard.writeText(text)
-        .then(()=> alert("Times copiados! Pode colar no WhatsApp."))
-        .catch(()=> alert("Erro ao copiar."));
 }
 </script>
 
